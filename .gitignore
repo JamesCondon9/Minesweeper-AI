@@ -1,0 +1,14 @@
+# Cached python stuff
+__pycache__/
+*.py[cod]
+
+# Build artifacts
+bin/
+obj/
+
+# User-specific files
+*.user
+.vs/
+
+# YouTube video files
+YouTube Video/

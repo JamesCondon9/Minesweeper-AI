@@ -1,0 +1,48 @@
+**Project Progress: ~80% Complete**
+
+**Project Overview Video Progress: ~5% Complete**
+
+# 💣 Minesweeper-AI
+A passion project featuring a custom-built Minesweeper clone in **C# (WinForms)** and a **Python-based** rule-driven solver. The solver uses traditional AI techniques based on classic Minesweeper patterns ([minesweeper.online/help/patterns](minesweeper.online/help/patterns)) and interacts with the game through screen recognition and automation via `pyautogui` and `OpenCV`.
+
+
+- **Minesweeper-AI Directory** - C# Winforms Minesweeper Clone 🕹️
+- **ruleSolver.py** – Script to solve Minesweeper puzzles 👨‍🏫
+- **sweeperLib.py** – Module encapsulating screenshotting, mapping screenshots to minefield data structures, uncovering & flagging tiles 🧰
+
+
+All custom assets created for this project — namely the **"dark-mode" Minesweeper tiles,** which were drawn using Aseprite — are released under the **MIT License** and are free for anyone to use, modify, or redistribute. All other assets used in the project were sourced from the public domain.
+
+# 📽️ Project Overview
+\<Youtube video still in production!\>
+
+# 📈 Future Plans
+[1] -> Implement "remaining mines" and "timer" 7-segment displays to minesweeper game
+
+[2] -> Improve solver success rate (add remainder of patterns, certain patterns require knowledge of the remaining mines)
+
+[3] -> Benchmark performance and compare against other algorithms, consider potential optimisations and improvements
+
+[4] -> Produce project overview video
+
+[5] -> Create a _new solver_ using **ML techniques** (genetic algorithms / neural networks)
+
+# ✅ Acknowledgements
+While this project is entirely my own work, I used generative AI tools in a limited and intentional way to support my learning process. Specifically:
+
+- ChatGPT (GPT-4.5, OpenAI – https://chat.openai.com/) was used primarily for debugging support, summarising notes, and proofreading text I had already written. I avoided relying on it for code generation to ensure I developed a deep understanding of the technologies and problem-solving approaches involved.
+
+- GitHub Copilot was occasionally used to assist with syntax or auto-completion, but not for generating core logic or algorithms. (Only used for game code, not solver)
+
+My goal was to minimise reliance on generative AI in order to better learn and internalise the principles behind both traditional AI methods and system development.
+
+# 🔗 Useful References
+Comercial, E., 2021. Explosion sound effect [Online]. Available from: [https://www.youtube.com/watch?v=w2vm1lcQMxk](https://www.youtube.com/watch?v=w2vm1lcQMxk) [Accessed 24 May 2025].
+
+Nicholas, E., (n.d.). Minesweeper Online - Play Free Online Minesweeper [Online]. Available from: [https://minesweeperonline.com](https://minesweeperonline.com) [Accessed 10 May 2025].
+
+Unknown, (n.d.). Patterns - Minesweeper Online [Online]. Available from: [https://minesweeper.online/help/patterns](https://minesweeper.online/help/patterns) [Accessed 24 May 2025].
+
+Hill, D.N., 2025. JSMinesweeper [Online]. Available from: [https://davidnhill.github.io/JSMinesweeper](https://davidnhill.github.io/JSMinesweeper) [Accessed 25 May 2025]. (Discovered via [htttps://reddit.com/u/BinaryChop](https://reddit.com/u/BinaryChop), see [https://github.com/DavidNHill/JSMinesweeper](https://github.com/DavidNHill/JSMinesweeper))
+
+Greshman, E. [Code Bullet], 2025. Using A.I. to DESTROY Minesweeper [Online]. Available from: [https://www.youtube.com/watch?v=ehAStJmx_Fo](https://www.youtube.com/watch?v=ehAStJmx_Fo) [Accessed 26 May. 2025].
