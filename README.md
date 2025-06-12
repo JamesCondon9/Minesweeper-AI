@@ -16,7 +16,9 @@ All custom assets created for this project — namely the **"dark-mode" Mineswee
 # 📽️ Project Overview
 \<Youtube video still in production!\>
 
-# 📈 Future Plans
+# 📈 Future Plans (Not in Order of Importance)
+[0] -> Make camelCase and snake_case consistent throughout program
+
 [1] -> Implement "remaining mines" and "timer" 7-segment displays to minesweeper game
 
 [2] -> Improve solver success rate (add remainder of patterns, certain patterns require knowledge of the remaining mines)
@@ -26,6 +28,8 @@ All custom assets created for this project — namely the **"dark-mode" Mineswee
 [4] -> Produce project overview video
 
 [5] -> Create a _new solver_ using **ML techniques** (genetic algorithms / neural networks)
+
+[6] -> REPLACEMENTS OF BOTTOM BLUE BAR OF SCREEN: Include visualisation of frontier into program, potentially "random seed" or "set seed" button, display current seed.
 
 # ✅ Acknowledgements
 While this project is entirely my own work, I used generative AI tools in a limited and intentional way to support my learning process. Specifically:
