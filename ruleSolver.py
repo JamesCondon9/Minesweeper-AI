@@ -11,15 +11,13 @@ def step_solver(minefield):
                 continue # Skip non-number tiles.
             else:
                 #print(f"\nStepping from row {y} column {x} tile...")
-                basic_checks(minefield, x, y)
+                solve_from_tile(minefield, x, y)
 
-
-def basic_checks(minefield, x, y):
+def solve_from_tile(minefield, x, y):
     
     # TEMPORARY TEST BLOCK ~~~~~~
-    """ if(y != 8 or x != 28):
+    """ if(y!= 6 or x != 4):
         return """
-
     # TEMPORARY TEST BLOCK ~~~~~~
 
     try:
@@ -29,13 +27,13 @@ def basic_checks(minefield, x, y):
     
     
     try:
-        flagged_count, covered_count, surrounding_tiles = find_surrounding_tiles(minefield, x, y)
+        flagged_count, covered_count, surrounding_tiles = find_surrounding_tiles(minefield, y, x)
     except TypeError: # If nothing is returned from find_surrounding_tiles
         return
 
     touching_count = flagged_count + covered_count
     surrounding_adjacent_covered_tiles = []
-    surrounding_number_tiles = []
+    surrounding_number_tiles = {}
 
     #print(f"covered: {covered_count} flagged: {flagged_count} touching: {touching_count}")
 
@@ -46,7 +44,7 @@ def basic_checks(minefield, x, y):
     # Basic Pattern [B1]
     
     if(tile_value-flagged_count == covered_count):
-        #print("BASIC CHECK B1 ACTIVATED!")
+        print("BASIC CHECK [B1] ACTIVATED!")
         for (row, col), value in surrounding_tiles.items(): # Flag all covered tiles as they are all mines
            # print(f"Surrouning Tile: {(row, col)} Value: {value}")
             if(value == "covered"):
@@ -57,7 +55,7 @@ def basic_checks(minefield, x, y):
     
     # Basic Pattern [B2]
     elif(tile_value == flagged_count):
-        #print("BASIC CHECK B2 ACTIVATED!")
+        print("BASIC CHECK [B2] ACTIVATED!")
         for (row, col), value in surrounding_tiles.items(): # Click all covered tiles as there are no remaining mines
             if(value == "covered"):
                 #print(f"Uncovering {(row, col)}")
@@ -68,17 +66,11 @@ def basic_checks(minefield, x, y):
     else: # Prepare more data for next round of basic checks on the tile
         surrounding_adjacent_covered_tiles = find_adjacent_covered_tiles(surrounding_tiles)
         surrounding_number_tiles = find_surrounding_number_tiles(surrounding_tiles)
-   
-    
-    # TEMP TESTING CODE BLOCK ~~~~~~~~~~   
-    surrounding_adjacent_covered_tiles = find_adjacent_covered_tiles(surrounding_tiles)
-    surrounding_number_tiles = find_surrounding_number_tiles(surrounding_tiles)     
-    # TEMP TESTING CODE BLOCK ~~~~~~~~~~   
+
 
     # Basic Patterns [1-1], [1-1+], [1-2] and [1-2+]
 
     if(tile_value == 1 and only_has_one_N_length_sublist(surrounding_adjacent_covered_tiles, 2)):
-        #print(f"RUNNING [1-1] / [1-1+] PATTERN on {(y,x)}")
         tile_index = 0 # Used to pick "the other one" out of the list of two coordinates, i.e. from the corner tile, used to find the index of the edge tile with a mod operation
         for tile in surrounding_adjacent_covered_tiles[0]:
             tile_index += 1
@@ -91,27 +83,29 @@ def basic_checks(minefield, x, y):
 
                 new_tile_value = minefield[y+delta_y][x+delta_x]
 
+                try:
+                    int(new_tile_value)
+                except:
+                    return
+
                 # [1-1] and [1-1+]
                 if(new_tile_value == "1"):
-                    _, _, new_surrounding_tiles = find_surrounding_tiles(minefield, x+delta_x, y+delta_y)
+                    _, _, new_surrounding_tiles = find_surrounding_tiles(minefield, y+delta_y, x+delta_x)
 
                     # Click all tiles that aren't the original two adjacent ones
                     for new_surrounding_tile in new_surrounding_tiles:
                         # Check it wasn't one of the originals and is a covered tile
                         if(not new_surrounding_tile in surrounding_tiles and minefield[new_surrounding_tile[0]][new_surrounding_tile[1]] == "covered"):
                             try:
-                                #print(f"Uncovering {(new_surrounding_tile[0], new_surrounding_tile[1])} by [1-1] rule from {y,x}")
                                 sweeperLib.uncover_tile((new_surrounding_tile[1], new_surrounding_tile[0]))
                             except MineNotWithinGridException as e:
                                 print(f"Invalid mine coordinate: {e}")
                     
                     return
 
-
-                # <<<<<<<<<<<<<<<<<<<<<< DEFINITELY SOMETHING WEIRD GOING ON HERE, IN THE SEED I LEFT THE PROGRAM IN, IT UNFLAGGED AROUND THE 6
                 # [1-2] and [1-2+]
                 elif(int(new_tile_value) >= 2 and int(new_tile_value) <= 8):
-                    flagged_count, covered_count, new_surrounding_tiles = find_surrounding_tiles(minefield, x+delta_x, y+delta_y)
+                    flagged_count, covered_count, new_surrounding_tiles = find_surrounding_tiles(minefield, y+delta_y, x+delta_x)
 
                     # Remaining tiles must be mines if there is exactly one mine in the original two adjacent tiles
                     if(covered_count-2 == int(new_tile_value)-flagged_count-1):
@@ -120,19 +114,151 @@ def basic_checks(minefield, x, y):
                             # Check it wasn't one of the originals and is a covered tile
                             if(not new_surrounding_tile in surrounding_tiles and minefield[new_surrounding_tile[0]][new_surrounding_tile[1]] == "covered"):
                                 try:
-                                    print(f"\n\nflagged: {flagged_count} covered: {covered_count}")
-                                    print(f"new surrounding tiles: {new_surrounding_tiles}")
-                                    print(f"Flagging {(new_surrounding_tile[0], new_surrounding_tile[1])} by [1-{new_tile_value}] rule from {y,x}")
+                                    minefield[new_surrounding_tile[0]][new_surrounding_tile[1]] = "flagged"
                                     sweeperLib.flag_tile((new_surrounding_tile[1], new_surrounding_tile[0]))
                                 except MineNotWithinGridException as e:
                                     print(f"Invalid mine coordinate: {e}")
+                    return
 
 
+    # Basic Patterns [1-2-1] and [1-2-2-1]
+    # Hole Pattern [H1]
+    if(tile_value == 1):
+        for (row, col), value in surrounding_number_tiles.items(): # Loop over four directions from 1st tile
+            delta_y = row - y
+            delta_x = col - x
+            if(delta_y != 0 and delta_x != 0): # Ignore corner tiles
+                continue
 
-        return
-   
+            if(value == "1"): # Keep checking for Hole Pattern [H1]
+                offset_x = 0 if delta_y == 0 else 1 # i.e. set to 1 when delta_x == 0
+                offset_y = 1 if delta_y == 0 else 0
+
+                common_tile_one = (y+delta_y+offset_y,x+delta_x+offset_x)
+                common_tile_two = (y+delta_y+-1*offset_y,x+delta_x+-1*offset_x)
+
+                if(not(is_in_bounds(common_tile_one[0], common_tile_two[1]) or is_in_bounds(common_tile_two[0], common_tile_two[1]))):
+                   continue
+
+                if(coords_are_only_surroundings(minefield, [common_tile_one, common_tile_two], y, x)):
+                    _, _, new_surrounding_tiles = find_surrounding_tiles(minefield, y+delta_y, x+delta_x)
+                    for coord, value in new_surrounding_tiles.items():
+                        print("HOLE CHECK [H1] ACTIVATED!")
+                        if(value == "covered" and coord != common_tile_one and coord != common_tile_two and is_in_bounds(coord[0], coord[1])):
+                            sweeperLib.uncover_tile(coord)
+                return
+
+            elif(value == "2"): # Keep checking for Basic Patterns [1-2-1] and [1-2-2-1]
+                # Check 3rd tile is in-bounds
+                if(not(is_in_bounds(row+2*delta_y, col+2*delta_x))):
+                        continue
+
+                next_tile_value = minefield[row+delta_y][col+delta_x] # 3rd tile
+
+                if(next_tile_value == "1"): # [1-2-1]
+
+                    print("BASIC CHECK [1-2-1] ACTIVATED!")
+                    # Find where the edge tiles to click are based on [1-2-1] line direction
+                    if(delta_y == 0):
+                        offset_x = 0
+                        if(minefield[y-1][x] == "covered"):
+                            offset_y = -1
+                        else:
+                            offset_y = 1
+                    else: # (delta_x == 0)
+                        if(minefield[y][x-1] == "covered"):
+                            offset_x = -1
+                        else:
+                            offset_x = 1
+                        offset_y = 0
+
+                    # Define the covered tiles adjacent to the [1-2-1] pattern
+                    tile0 = (y - delta_y + offset_y, x - delta_x + offset_x)       # Down+Left from first [1]
+                    tile1 = (y + offset_y, x + offset_x)                           # Down from first [1]
+                    tile2 = (y + delta_y + offset_y, x + delta_x + offset_x)       # Down from first [2]
+                    tile3 = (y + 2 * delta_y + offset_y, x + 2 * delta_x + offset_x)  # Down from second [1]
+                    tile4 = (y + 3 * delta_y + offset_y, x + 3 * delta_x + offset_x)  # Down+Right from second [1]
+
+                    # Check there are not tiles adjacent to the [1-2-1] that invalidate the pattern (only one parallel line allowed)
+                    if not coords_are_only_surroundings(minefield, [tile0, tile1, tile2], y, x):
+                        continue
+                    if not coords_are_only_surroundings(minefield, [tile1, tile2, tile3], y, x):
+                        continue
+                    if not coords_are_only_surroundings(minefield, [tile2, tile3, tile4], y, x):
+                        continue
+
+                    if(minefield[y+offset_y][x+offset_x] == "covered"):
+                        sweeperLib.flag_tile((x+offset_x, y+offset_y))
+                        minefield[y+offset_y][x+offset_x] = "flagged"
+
+                    if(minefield[y+delta_y+offset_y][x+delta_x+offset_x] == "covered"):
+                        sweeperLib.uncover_tile((x+delta_x+offset_x, y+delta_y+offset_y))
+
+                    if(minefield[y+2*delta_y+offset_y][x+2*delta_x+offset_x] == "covered"):
+                        sweeperLib.flag_tile((x+2*delta_x+offset_x, y+2*delta_y+offset_y))
+                        minefield[y+2*delta_y+offset_y][x+2*delta_x+offset_x] = "flagged"
+
+                    return
+
+                elif(next_tile_value == "2"): # Check further for [1-2-2-1]
+                    # Check 4th tile is in-bounds
+                    if(not(is_in_bounds(row+3*delta_y, col+3*delta_x))):
+                            continue
+
+                    next_tile_value = minefield[y+3*delta_y][x+3*delta_x] # 4th tile
+                    if(next_tile_value == "1"): # [1-2-2-1]
+                        print("BASIC CHECK [1-2-2-1] ACTIVATED!")
+
+                        # Find where the edge tiles to click are based on [1-2-2-1] line direction
+                        if(delta_y == 0):
+                            offset_x = 0
+                            if(minefield[y-1][x] == "covered"):
+                                offset_y = -1
+                            else:
+                                offset_y = 1
+                        else: # (delta_x == 0)
+                            if(minefield[y][x-1] == "covered"):
+                                offset_x = -1
+                            else:
+                                offset_x = 1
+                            offset_y = 0
+
+                        # Define the covered tiles adjacent to the [1-2-2-1] pattern
+                        tile0 = (y - delta_y + offset_y, x - delta_x + offset_x)       # Down+Left from first [1]
+                        tile1 = (y + offset_y, x + offset_x)                           # Down from first [1]
+                        tile2 = (y + delta_y + offset_y, x + delta_x + offset_x)       # Down from first [2]
+                        tile3 = (y + 2 * delta_y + offset_y, x + 2 * delta_x + offset_x)  # Down from second [2]
+                        tile4 = (y + 3 * delta_y + offset_y, x + 3 * delta_x + offset_x)  # Down from second [1]
+                        tile5 = (y + 4 * delta_y + offset_y, x + 4 * delta_x + offset_x)  # Down+Right from second [1]
+
+                        # Check there are not tiles adjacent to the [1-2-2-1] that invalidate the pattern (only one parallel line allowed)
+                        if not coords_are_only_surroundings(minefield, [tile0, tile1, tile2], y, x): # Around first [1]
+                            continue
+                        if not coords_are_only_surroundings(minefield, [tile1, tile2, tile3], y, x): # Around first [2]
+                            continue
+                        if not coords_are_only_surroundings(minefield, [tile2, tile3, tile4], y, x): # Around second [2]
+                            continue
+                        if not coords_are_only_surroundings(minefield, [tile3, tile4, tile5], y, x): # Around second [1]
+                            continue
+
+                        if(minefield[y+offset_y][x+offset_x] == "covered"):
+                            sweeperLib.uncover_tile((x+offset_x, y+offset_y))
+
+                        if(minefield[y+delta_y+offset_y][x+delta_x+offset_x] == "covered"):
+                            sweeperLib.flag_tile((x+delta_x+offset_x, y+delta_y+offset_y))
+                            minefield[y+delta_y+offset_y][x+delta_x+offset_x] = "flagged"
+
+                        if(minefield[y+2*delta_y+offset_y][x+2*delta_x+offset_x] == "covered"):
+                            sweeperLib.flag_tile((x+2*delta_x+offset_x, y+2*delta_y+offset_y))
+                            minefield[y+2*delta_y+offset_y][x+2*delta_x+offset_x] = "flagged"
+
+                        if(minefield[y+3*delta_y+offset_y][x+3*delta_x+offset_x] == "covered"):
+                            sweeperLib.uncover_tile((x+3*delta_x+offset_x, y+3*delta_y+offset_y))
+
+                        return
+
                 
-def find_surrounding_tiles(minefield, x, y):
+def find_surrounding_tiles(minefield, y, x):
     flagged_count = 0
     covered_count = 0
 
@@ -147,7 +273,7 @@ def find_surrounding_tiles(minefield, x, y):
             surrounding_row = y+i
             surrounding_col = x+j
 
-            if(surrounding_row < 0 or surrounding_col < 0 or surrounding_row > gridSize[0]-1 or surrounding_col > gridSize[1]-1): # Check surrounding mines are not on the edge of the board
+            if(not(is_in_bounds(surrounding_row, surrounding_col))): # Check surrounding mines are not on the edge of the board
                 continue
 
             surrounding_tile = minefield[surrounding_row][surrounding_col]
@@ -193,17 +319,17 @@ def find_surrounding_number_tiles(tile_dict):
     if not(isinstance(tile_dict, dict)):
         return None
 
-    coords_list = []
+    coords_dict = {}
 
     for coord, value in tile_dict.items():
         try:
             int(value) # "If string is an integer value, a number 1-8"
-            coords_list.append(coord)
+            coords_dict.update({coord:value})
         except:
             continue
 
 
-    return coords_list
+    return coords_dict
 
 def only_has_one_N_length_sublist(tile_list, N):
     # Ensure supplied list is 2D
@@ -216,9 +342,19 @@ def only_has_one_N_length_sublist(tile_list, N):
     
     return False
 
+def coords_are_only_surroundings(minefield, coords, row, col): # Check supplied coords list are the only covered tiles surrounding (y,x)
+    _, _, surrounding_tiles = find_surrounding_tiles(minefield, row, col)
+    for tile, value in surrounding_tiles.items():
+        if(not(tile in coords) and value == "covered"):
+            return False
+    return True
+
 def is_corner(tile, centre):
     y,x = centre
     return tile == (y+1,x+1) or tile == (y+1, x-1) or tile == (y-1, x+1) or tile == (y-1, x-1)
+
+def is_in_bounds(row, col):
+    return not(row > gridSize[0]-1 or col > gridSize[1]-1 or row < 0 or col < 0)
 
 def Manhattan(tup1, tup2):
     return abs(tup1[0] - tup2[0]) + abs(tup1[1] - tup2[1])

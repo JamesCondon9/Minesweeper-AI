@@ -2,6 +2,8 @@
 
 **Project Overview Video Progress: ~5% Complete**
 
+(Total Screen Recording Footage So Far: **05:28:55** over _94 videos!_ Video length goal is **7 minutes!**) 
+
 # 💣 Minesweeper-AI
 A passion project featuring a custom-built Minesweeper clone in **C# (WinForms)** and a **Python-based** rule-driven solver. The solver uses traditional AI techniques based on classic Minesweeper patterns ([minesweeper.online/help/patterns](minesweeper.online/help/patterns)) and interacts with the game through screen recognition and automation via `pyautogui` and `OpenCV`.
 
@@ -16,7 +18,9 @@ All custom assets created for this project — namely the **"dark-mode" Mineswee
 # 📽️ Project Overview
 \<Youtube video still in production!\>
 
-# 📈 Future Plans
+# 📈 Future Plans (Not in Order of Importance)
+[0] -> Make camelCase and snake_case consistent throughout program
+
 [1] -> Implement "remaining mines" and "timer" 7-segment displays to minesweeper game
 
 [2] -> Improve solver success rate (add remainder of patterns, certain patterns require knowledge of the remaining mines)
@@ -26,6 +30,12 @@ All custom assets created for this project — namely the **"dark-mode" Mineswee
 [4] -> Produce project overview video
 
 [5] -> Create a _new solver_ using **ML techniques** (genetic algorithms / neural networks)
+
+[6] -> REPLACEMENTS OF BOTTOM BLUE BAR OF SCREEN: Include visualisation of frontier into program, potentially "random seed" or "set seed" button, display current seed.
+
+[7] -> UI improvements, fix button animations and improve menu screen because it's currently a bit ugly
+
+[8] -> Refactor minefield data structure to avoid clicking uncovered tiles multiple times (slow)
 
 # ✅ Acknowledgements
 While this project is entirely my own work, I used generative AI tools in a limited and intentional way to support my learning process. Specifically:
@@ -46,3 +56,5 @@ Unknown, (n.d.). Patterns - Minesweeper Online [Online]. Available from: [https:
 Hill, D.N., 2025. JSMinesweeper [Online]. Available from: [https://davidnhill.github.io/JSMinesweeper](https://davidnhill.github.io/JSMinesweeper) [Accessed 25 May 2025]. (Discovered via [htttps://reddit.com/u/BinaryChop](https://reddit.com/u/BinaryChop), see [https://github.com/DavidNHill/JSMinesweeper](https://github.com/DavidNHill/JSMinesweeper))
 
 Greshman, E. [Code Bullet], 2025. Using A.I. to DESTROY Minesweeper [Online]. Available from: [https://www.youtube.com/watch?v=ehAStJmx_Fo](https://www.youtube.com/watch?v=ehAStJmx_Fo) [Accessed 26 May. 2025].
+
+Unknown, 2023. Python - Group Adjacent Coordinates - GeeksforGeeks [Online]. Available from: [https://www.geeksforgeeks.org/python-group-adjacent-coordinates](https://www.geeksforgeeks.org/python-group-adjacent-coordinates/) [Accessed 09 June 2025].

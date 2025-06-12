@@ -15,6 +15,8 @@ namespace Minesweeper_AI
         private HashSet<Point> uncoveredTiles = new HashSet<Point>();
         private bool clickedFirst = false; // Flag to check if the first tile h6as been clicked
         private bool hasWon = false;
+        private int gameSeed = 18472; // Set to NULL for random seed (i think, don't know if that works)
+        private bool displayingFrontier = false; // State whether or not to highlight the frontier
 
         // Add private readonly Bitmap fields for all images used
         private readonly Bitmap coveredTileBitmap = new(Properties.Resources.Covered_Tile, new Size(32, 32));
@@ -213,7 +215,7 @@ namespace Minesweeper_AI
 
         private void placeMines(int rows, int cols, int mineCount) {
             mineField = new int[rows, cols];
-            Random rng = new Random(1229); // REMOVE SEED AFTER TO ALLOW RANDOMNESS (EMPTY PARAMETER)
+            Random rng = new Random(gameSeed); // REMOVE SEED AFTER TO ALLOW RANDOMNESS (EMPTY PARAMETER)
 
             HashSet<Point> placedMines = new HashSet<Point>();
             while (placedMines.Count < mineCount)
@@ -310,18 +312,7 @@ namespace Minesweeper_AI
                     return;
             }
 
-            // Board analysis buttons
-            Button showFrontierButton = new Button(); // Button to show what cells are being analysed, highlight them a certain colour
-            showFrontierButton.Text = "Show Frontier";
-
-            Button showDangerButton = new Button(); // Button to show what cells are definitely mines, highlight them a certain colour
-            showDangerButton.Text = "Show Dangerous Tiles";
-
-            Button showSafeButton = new Button(); // Button to show what cells are definitely safe, highlight them a certain colour
-            showSafeButton.Text = "Show Safe Tiles";
-
-            Button stepOnceButton = new Button(); // Button to step through the solver one step at a time
-            stepOnceButton.Text = "Solve Next Step";
+            
 
             // Set form window to exactly fit the minefield, upperBarPanel and lowerBarPanel
             int gridWidth = 32 * cols;
@@ -357,11 +348,78 @@ namespace Minesweeper_AI
             mineGrid = CreateMineGrid(rows, cols, mineCount);
             mainPanel.Controls.Add(mineGrid, 0, 1);
 
-            // Add buttons to lower bar
-            lowerBarPanel.Controls.Add(showFrontierButton, 0, 0);
-            lowerBarPanel.Controls.Add(showDangerButton, 1, 0);
-            lowerBarPanel.Controls.Add(showSafeButton, 2, 0);
-            lowerBarPanel.Controls.Add(stepOnceButton, 3, 0);
+            if (lowerBarPanel.GetControlFromPosition(0,0) == null)
+            {
+                // Frontier Analysis / Seed Buttons
+                Button showFrontierButton = new Button();
+                showFrontierButton.Text = "Frontier";
+
+                Button setRandomSeed = new Button();
+                setRandomSeed.Text = "Random";
+                setRandomSeed.Click += setRandomSeed_Click;
+
+                Button setSpecificSeed = new Button();
+                setSpecificSeed.Text = "Set Seed";
+                setSpecificSeed.Click += setSpecificSeed_Click;
+
+                // Resize buttons to fit their text with some padding
+                ResizeButtonToFitText(showFrontierButton);
+                ResizeButtonToFitText(setRandomSeed);
+                ResizeButtonToFitText(setSpecificSeed);
+
+                ToolTip tooltip = new ToolTip();
+                tooltip.SetToolTip(showFrontierButton, "Show which cells are currently being analysed");
+                tooltip.SetToolTip(setRandomSeed, "Set a random seed for the minefield");
+                tooltip.SetToolTip(setSpecificSeed, "Set a specific seed for the minefield");
+
+                
+                // Add buttons to lower bar
+                lowerBarPanel.Controls.Add(showFrontierButton, 0, 0);
+                lowerBarPanel.Controls.Add(setRandomSeed, 1, 0);
+                lowerBarPanel.Controls.Add(setSpecificSeed, 2, 0);
+            }
+
+            Label previousGameSeedLabel = (Label)lowerBarPanel.GetControlFromPosition(3, 0);
+
+            if (previousGameSeedLabel != null)
+            {
+                lowerBarPanel.Controls.Remove(previousGameSeedLabel);
+            }
+
+            // Replace the label creation and assignment with this code to ensure the text fits
+            Label gameSeedLabel = new Label();
+            gameSeedLabel.AutoSize = false;
+            gameSeedLabel.TextAlign = ContentAlignment.MiddleLeft;
+            gameSeedLabel.Dock = DockStyle.Fill;
+            gameSeedLabel.Text = "Board Seed: " + gameSeed;
+
+            // Adjust font size if text is too wide for the label
+            gameSeedLabel.SizeChanged += (s, ev) =>
+            {
+                var label = (Label)s;
+                int minFontSize = 6;
+                int maxFontSize = 20;
+                using (Graphics g = label.CreateGraphics())
+                {
+                    for (int fontSize = maxFontSize; fontSize >= minFontSize; fontSize--)
+                    {
+                        using (Font testFont = new Font(label.Font.FontFamily, fontSize, label.Font.Style))
+                        {
+                            SizeF textSize = g.MeasureString(label.Text, testFont);
+                            if (textSize.Width <= label.Width)
+                            {
+                                label.Font = new Font(label.Font.FontFamily, fontSize, label.Font.Style);
+                                break;
+                            }
+                        }
+                    }
+                }
+            };
+
+
+
+            lowerBarPanel.Controls.Add(gameSeedLabel, 3, 0);
+
         }
 
         private void restartGame(object sender, EventArgs e)
@@ -397,7 +455,7 @@ namespace Minesweeper_AI
                 handleFirstClick(i, j);
                 return;
             }
-
+            
             if (value == 0) // Empty tile
             {
                 clickedTile.Image = emptyTileBitmap;
@@ -555,6 +613,10 @@ namespace Minesweeper_AI
 
         }
 
+        private void showFrontier(object sender, EventArgs e) {
+            
+        }
+
         private void Tile_MouseUp(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
@@ -680,6 +742,82 @@ namespace Minesweeper_AI
 
             }
 
+        }
+
+        // Helper method
+        void ResizeButtonToFitText(Button button)
+        {
+            Size textSize = TextRenderer.MeasureText(button.Text, button.Font);
+            button.Size = new Size(textSize.Width + 20, textSize.Height + 10); // Adjust padding as needed
+        }
+
+        private void setRandomSeed_Click(object sender, EventArgs e) {
+            // Generate a random seed and update the game seed
+            Random rng = new Random();
+            gameSeed = rng.Next(1, 999999999); // Generate a random seed between 1 and int.MaxValue
+            MessageBox.Show($"Random seed set to: {gameSeed}");
+            restartGame(sender, e);
+        }
+
+        private void setSpecificSeed_Click(object sender, EventArgs e) {
+            int? seed = ShowSeedInputDialogue("Enter a seed value:");
+
+            if (!seed.HasValue)
+            {
+                // User cancelled or invalid input
+                MessageBox.Show("Seed entry cancelled or invalid (Only 1 <-> 9 digit integers allowed)");
+            }
+
+            else if (seed.Value <= 999999999)
+            {
+                // Use the seed (seed.Value)
+                MessageBox.Show($"Seed set to: {seed.Value}");
+                gameSeed = seed.Value; // Update the game seed
+                restartGame(sender, e);
+            }
+            else
+            {
+                // User cancelled or invalid input
+                MessageBox.Show("Only integers up to 9 digits in length permitted");
+            }
+        }
+
+        private int? ShowSeedInputDialogue(string prompt)
+        {
+            Form inputForm = new Form()
+            {
+                Width = 300,
+                Height = 150,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                Text = "Set Specific Seed",
+                StartPosition = FormStartPosition.CenterParent,
+                MinimizeBox = false,
+                MaximizeBox = false
+            };
+
+            Label textLabel = new Label() { Left = 10, Top = 10, Text = prompt, AutoSize = true };
+            TextBox inputBox = new TextBox() { Left = 10, Top = 35, Width = 260 };
+            Button okButton = new Button() { Text = "OK", Left = 115, Width = 75, Top = 70, DialogResult = DialogResult.OK };
+            Button cancelButton = new Button() { Text = "Cancel", Left = 195, Width = 75, Top = 70, DialogResult = DialogResult.Cancel };
+
+            okButton.Click += (sender, e) => { inputForm.Close(); };
+            cancelButton.Click += (sender, e) => { inputForm.Close(); };
+
+            inputForm.Controls.Add(textLabel);
+            inputForm.Controls.Add(inputBox);
+            inputForm.Controls.Add(okButton);
+            inputForm.Controls.Add(cancelButton);
+            inputForm.AcceptButton = okButton;
+            inputForm.CancelButton = cancelButton;
+
+            DialogResult result = inputForm.ShowDialog();
+
+            if (result == DialogResult.OK && int.TryParse(inputBox.Text, out int seedValue))
+            {
+                return seedValue;
+            }
+
+            return null; // Cancelled or invalid
         }
 
         private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)

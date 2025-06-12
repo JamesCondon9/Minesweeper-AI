@@ -10,7 +10,7 @@ import pyautogui as pag
 import numpy as np
 from pyautogui import ImageNotFoundException
 
-DIFFICULTY = 3 # 1: Beginner (9,9)  2: Intermediate (16,16)  3: Expert (16,30)
+DIFFICULTY = 1 # 1: Beginner (9,9)  2: Intermediate (16,16)  3: Expert (16,30)
 monitorX = 1920
 monitorY = 1080
 TILE_SIZE = 32
@@ -118,7 +118,8 @@ def process_grid():
         return tileGrid
 
     except ImageNotFoundException:
-        print("Minesweeper game not currently in view")
+        #print("Minesweeper game not currently in view")
+        pass
 
     except MineGridNotFullyVisibleException as e:
         print(f"Error: {e}")
