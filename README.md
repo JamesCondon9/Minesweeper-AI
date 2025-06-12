@@ -51,4 +51,4 @@ Hill, D.N., 2025. JSMinesweeper [Online]. Available from: [https://davidnhill.gi
 
 Greshman, E. [Code Bullet], 2025. Using A.I. to DESTROY Minesweeper [Online]. Available from: [https://www.youtube.com/watch?v=ehAStJmx_Fo](https://www.youtube.com/watch?v=ehAStJmx_Fo) [Accessed 26 May. 2025].
 
-Unknown, 2023. Python - Group Adjacent Coordinates - GeeksforGeeks [Online]. Available from: [https://www.geeksforgeeks.org/python-group-adjacent-coordinates](https://www.geeksforgeeks.org/python-group-adjacent-coordinates/) [Accessed 09 June 2025]
+Unknown, 2023. Python - Group Adjacent Coordinates - GeeksforGeeks [Online]. Available from: [https://www.geeksforgeeks.org/python-group-adjacent-coordinates](https://www.geeksforgeeks.org/python-group-adjacent-coordinates/) [Accessed 09 June 2025].
