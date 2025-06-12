@@ -31,6 +31,8 @@ All custom assets created for this project — namely the **"dark-mode" Mineswee
 
 [6] -> REPLACEMENTS OF BOTTOM BLUE BAR OF SCREEN: Include visualisation of frontier into program, potentially "random seed" or "set seed" button, display current seed.
 
+[7] -> UI improvements, fix button animations and improve menu screen because it's currently a bit ugly
+
 # ✅ Acknowledgements
 While this project is entirely my own work, I used generative AI tools in a limited and intentional way to support my learning process. Specifically:
 
