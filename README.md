@@ -33,6 +33,8 @@ All custom assets created for this project — namely the **"dark-mode" Mineswee
 
 [7] -> UI improvements, fix button animations and improve menu screen because it's currently a bit ugly
 
+[8] -> Refactor minefield data structure to avoid clicking uncovered tiles multiple times (slow)
+
 # ✅ Acknowledgements
 While this project is entirely my own work, I used generative AI tools in a limited and intentional way to support my learning process. Specifically:
 
