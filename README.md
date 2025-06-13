@@ -18,6 +18,9 @@ All custom assets created for this project — namely the **"dark-mode" Mineswee
 # 📽️ Project Overview
 \<Youtube video still in production!\>
 
+# 📽️ Project Overview Preview
+[![Watch the video](https://img.youtube.com/vi/pSmrhPFUxZM/0.jpg)](https://www.youtube.com/watch?v=pSmrhPFUxZM)
+
 # 📈 Future Plans (Not in Order of Importance)
 [0] -> Make camelCase and snake_case consistent throughout program
 
