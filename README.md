@@ -19,6 +19,8 @@ All custom assets created for this project — namely the **"dark-mode" Mineswee
 \<Youtube video still in production!\>
 
 # 📽️ Project Overview Preview
+(Click the image below to get taken to [YouTube](https://www.youtube.com/watch?v=njauXJpiuJ4))
+
 [![Watch the video](https://img.youtube.com/vi/njauXJpiuJ4/0.jpg)](https://www.youtube.com/watch?v=njauXJpiuJ4)
 
 # 📈 Future Plans (Not in Order of Importance)
