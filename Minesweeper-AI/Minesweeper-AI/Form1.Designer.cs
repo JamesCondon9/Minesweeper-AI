@@ -39,16 +39,15 @@
             // 
             upperBarPanel.BackColor = Color.FromArgb(17, 14, 17);
             upperBarPanel.ColumnCount = 3;
-            upperBarPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 10F));
-            upperBarPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 80F));
-            upperBarPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 10F));
+            upperBarPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35F));
+            upperBarPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30F));
+            upperBarPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35F));
             upperBarPanel.Dock = DockStyle.Top;
             upperBarPanel.Location = new Point(0, 0);
             upperBarPanel.Margin = new Padding(0);
             upperBarPanel.Name = "upperBarPanel";
             upperBarPanel.RowCount = 1;
             upperBarPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            upperBarPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             upperBarPanel.Size = new Size(1012, 69);
             upperBarPanel.TabIndex = 0;
             upperBarPanel.Paint += upperBarPanel_Paint;

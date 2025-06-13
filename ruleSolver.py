@@ -122,7 +122,7 @@ def solve_from_tile(minefield, x, y):
 
 
     # Basic Patterns [1-2-1] and [1-2-2-1]
-    # Hole Pattern [H1]
+    # Hole Patterns [H1]
     if(tile_value == 1):
         for (row, col), value in surrounding_number_tiles.items(): # Loop over four directions from 1st tile
             delta_y = row - y
@@ -256,6 +256,9 @@ def solve_from_tile(minefield, x, y):
                             sweeperLib.uncover_tile((x+3*delta_x+offset_x, y+3*delta_y+offset_y))
 
                         return
+
+    # Mine Counting
+    
 
                 
 def find_surrounding_tiles(minefield, y, x):

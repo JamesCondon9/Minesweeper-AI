@@ -12,6 +12,7 @@ namespace Minesweeper_AI
         private int[,] mineField; // 2D array to hold minefield data
                                   // 0: Empty, 1-8: Number of adjacent mines, 9: Mine
         private int mineCount = 0;
+        private int flaggedCount = 0;
         private HashSet<Point> uncoveredTiles = new HashSet<Point>();
         private bool clickedFirst = false; // Flag to check if the first tile h6as been clicked
         private bool hasWon = false;
@@ -37,16 +38,16 @@ namespace Minesweeper_AI
         private readonly Bitmap tile7Bitmap = new(Properties.Resources.Tile_7, new Size(32, 32));
         private readonly Bitmap tile8Bitmap = new(Properties.Resources.Tile_8, new Size(32, 32));
         private readonly Bitmap emptyCounterBitmap = new(Properties.Resources.Empty_Counter, new Size(50, 100));
-        private readonly Bitmap zeroCounterBitmap = new(Properties.Resources.Zero_Counter, new Size(50, 100));
-        private readonly Bitmap oneCounterBitmap = new(Properties.Resources.One_Counter, new Size(50, 100));
-        private readonly Bitmap twoCounterBitmap = new(Properties.Resources.Two_Counter, new Size(50, 100));
-        private readonly Bitmap threeCounterBitmap = new(Properties.Resources.Three_Counter, new Size(50, 100));
-        private readonly Bitmap fourCounterBitmap = new(Properties.Resources.Four_Counter, new Size(50, 100));
-        private readonly Bitmap fiveCounterBitmap = new(Properties.Resources.Five_Counter, new Size(50, 100));
-        private readonly Bitmap sixCounterBitmap = new(Properties.Resources.Six_Counter, new Size(50, 100));
-        private readonly Bitmap sevenCounterBitmap = new(Properties.Resources.Seven_Counter, new Size(50, 100));
-        private readonly Bitmap eightCounterBitmap = new(Properties.Resources.Eight_Counter, new Size(50, 100));
-        private readonly Bitmap nineCounterBitmap = new(Properties.Resources.Nine_Counter, new Size(50, 100));
+        private readonly Bitmap counter0Bitmap = new(Properties.Resources.Zero_Counter, new Size(50, 100));
+        private readonly Bitmap counter1Bitmap = new(Properties.Resources.One_Counter, new Size(50, 100));
+        private readonly Bitmap counter2Bitmap = new(Properties.Resources.Two_Counter, new Size(50, 100));
+        private readonly Bitmap counter3Bitmap = new(Properties.Resources.Three_Counter, new Size(50, 100));
+        private readonly Bitmap counter4Bitmap = new(Properties.Resources.Four_Counter, new Size(50, 100));
+        private readonly Bitmap counter5Bitmap = new(Properties.Resources.Five_Counter, new Size(50, 100));
+        private readonly Bitmap counter6Bitmap = new(Properties.Resources.Six_Counter, new Size(50, 100));
+        private readonly Bitmap counter7Bitmap = new(Properties.Resources.Seven_Counter, new Size(50, 100));
+        private readonly Bitmap counter8Bitmap = new(Properties.Resources.Eight_Counter, new Size(50, 100));
+        private readonly Bitmap counter9Bitmap = new(Properties.Resources.Nine_Counter, new Size(50, 100));
         private HashSet<Bitmap> uncoveredTileBitmaps;
 
 
@@ -119,7 +120,7 @@ namespace Minesweeper_AI
 
             mainPanel.Controls.Add(difficultyBox);
 
-        } 
+        }
 
         private void DifficultyChanged(object sender, EventArgs e)
         {
@@ -272,7 +273,7 @@ namespace Minesweeper_AI
             }
 
             // Initialise global variables for a new game
-            if(uncoveredTiles != null)
+            if (uncoveredTiles != null)
                 uncoveredTiles.Clear();
             else
                 uncoveredTiles = new HashSet<Point>();
@@ -283,7 +284,7 @@ namespace Minesweeper_AI
             await Task.Delay(500);
 
             // Prepare new screen elements to swap old ones with
-            
+
             // RESTART BUTTON
             Button restartButton = new Button();
 
@@ -296,7 +297,7 @@ namespace Minesweeper_AI
             restartButton.Click += restartGame; // Restart game on click
             BackColor = Color.FromArgb(64, 64, 64);
 
-
+           
             // MINE GRID
             int rows = 0, cols = 0;
             switch (difficulty)
@@ -312,7 +313,50 @@ namespace Minesweeper_AI
                     return;
             }
 
-            
+            // REMAINING MINES COUNTER AND TIMER
+            PictureBox hundredsMineCounter = new PictureBox();
+            PictureBox tensMineCounter = new PictureBox();
+            PictureBox unitsMineCounter = new PictureBox();
+
+            // Set SizeMode to Zoom so images scale proportionally (aspect ratio preserved)
+            hundredsMineCounter.SizeMode = PictureBoxSizeMode.Zoom;
+            tensMineCounter.SizeMode = PictureBoxSizeMode.Zoom;
+            unitsMineCounter.SizeMode = PictureBoxSizeMode.Zoom;
+
+            // Set margin to 0 for each PictureBox
+            hundredsMineCounter.Margin = new Padding(0);
+            tensMineCounter.Margin = new Padding(0);
+            unitsMineCounter.Margin = new Padding(0);
+
+            // Make them fill their cells
+            hundredsMineCounter.Dock = DockStyle.Right;
+            tensMineCounter.Dock = DockStyle.Fill;
+            unitsMineCounter.Dock = DockStyle.Left;
+
+            // Set initial image to empty counter
+            hundredsMineCounter.Image = counter1Bitmap;
+            tensMineCounter.Image = counter1Bitmap;
+            unitsMineCounter.Image = counter1Bitmap;
+
+            // Prepare mineRemainingCounterBox TableLayoutPanel to add PictureBoxes to
+            TableLayoutPanel minesRemainingCounterBox = new TableLayoutPanel();
+            minesRemainingCounterBox.ColumnCount = 3;
+            minesRemainingCounterBox.RowCount = 1;
+
+            int digitWidth = 25; // or whatever width your bitmap is
+
+            // Set column widths to evenly distribute space (or fix width if preferred)
+            minesRemainingCounterBox.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, digitWidth));
+            minesRemainingCounterBox.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, digitWidth));
+            minesRemainingCounterBox.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, digitWidth));
+            minesRemainingCounterBox.RowStyles.Add(new RowStyle(SizeType.Percent, 100f));
+
+            // Ensure it sizes correctly and is centered
+            minesRemainingCounterBox.AutoSize = true;
+            minesRemainingCounterBox.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            minesRemainingCounterBox.Dock = DockStyle.Fill;
+            minesRemainingCounterBox.Anchor = AnchorStyles.None;
+            minesRemainingCounterBox.BackColor = Color.Red;
 
             // Set form window to exactly fit the minefield, upperBarPanel and lowerBarPanel
             int gridWidth = 32 * cols;
@@ -333,13 +377,29 @@ namespace Minesweeper_AI
                 upperBarPanel.Controls.Remove(title);
             }
 
-             if (difficultyBox != null)
+            if (difficultyBox != null)
             {
                 mainPanel.Controls.Remove(difficultyBox);
                 mainPanel.Margin = new Padding(0); // Remove margins to make mineGrid fit the window
                 mainPanel.Padding = new Padding(0);
                 difficultyBox.Dispose();
             }
+
+            upperBarPanel.Controls.Add(minesRemainingCounterBox, 0, 0); // Add to upper bar panel
+
+            // Add picture boxes to the mine remaining counter box
+            minesRemainingCounterBox.Controls.Add(hundredsMineCounter, 0, 0);
+            minesRemainingCounterBox.Controls.Add(tensMineCounter, 1, 0);
+            minesRemainingCounterBox.Controls.Add(unitsMineCounter, 2, 0);
+            
+            updateRemainingMines();
+
+
+            upperBarPanel.Controls.Add(minesRemainingCounterBox, 0, 0);
+            upperBarPanel.Controls.Add(restartButton, 1, 0);
+
+            // Ensure minesRemainingCounterBox is on top
+            minesRemainingCounterBox.BringToFront();
 
             // Replace logo with reset button
             upperBarPanel.Controls.Add(restartButton, 1, 0);
@@ -348,7 +408,9 @@ namespace Minesweeper_AI
             mineGrid = CreateMineGrid(rows, cols, mineCount);
             mainPanel.Controls.Add(mineGrid, 0, 1);
 
-            if (lowerBarPanel.GetControlFromPosition(0,0) == null)
+
+            // Draw lower bar panel
+            if (lowerBarPanel.GetControlFromPosition(0, 0) == null)
             {
                 // Frontier Analysis / Seed Buttons
                 Button showFrontierButton = new Button();
@@ -372,7 +434,7 @@ namespace Minesweeper_AI
                 tooltip.SetToolTip(setRandomSeed, "Set a random seed for the minefield");
                 tooltip.SetToolTip(setSpecificSeed, "Set a specific seed for the minefield");
 
-                
+
                 // Add buttons to lower bar
                 lowerBarPanel.Controls.Add(showFrontierButton, 0, 0);
                 lowerBarPanel.Controls.Add(setRandomSeed, 1, 0);
@@ -419,11 +481,21 @@ namespace Minesweeper_AI
 
 
             lowerBarPanel.Controls.Add(gameSeedLabel, 3, 0);
-
         }
 
         private void restartGame(object sender, EventArgs e)
         {
+
+            // Remove any existing control from column 0, row 0
+            // Remove any existing control at column 0, row 1
+            Control control2 = upperBarPanel.GetControlFromPosition(0, 0);
+            if (control2 != null)
+            {
+                mainPanel.Controls.Remove(control2);
+                control2.Dispose(); // Optional: free resources if not reused
+            }
+
+
             // Remove any existing control at column 0, row 1
             Control control = mainPanel.GetControlFromPosition(0, 1);
             if (control != null)
@@ -455,7 +527,7 @@ namespace Minesweeper_AI
                 handleFirstClick(i, j);
                 return;
             }
-            
+
             if (value == 0) // Empty tile
             {
                 clickedTile.Image = emptyTileBitmap;
@@ -488,6 +560,44 @@ namespace Minesweeper_AI
             checkIfWon(); // Check if the game is won after each click
         }
 
+        private (Bitmap, Bitmap, Bitmap) numberToSevenSegmentDisplay(int number) {
+
+            int hundreds = number / 100;
+            int tens = (number / 10) % 10;
+            int units = number % 10;
+
+            Bitmap[] counterBitmaps = new Bitmap[]
+            {
+                counter0Bitmap, counter1Bitmap, counter2Bitmap, counter3Bitmap, counter4Bitmap,
+                counter5Bitmap, counter6Bitmap, counter7Bitmap, counter8Bitmap, counter9Bitmap
+            };
+
+            Bitmap hundredsCounterBitmap = counterBitmaps[hundreds];
+            Bitmap tensCounterBitmap = counterBitmaps[tens];
+            Bitmap unitsCounterBitmap = counterBitmaps[units];
+
+            return (hundredsCounterBitmap, tensCounterBitmap, unitsCounterBitmap);
+        }
+
+        private void updateRemainingMines() // Relies on there already existing three PictureBoxes in the mineRemainingCounterBox in order: hundreds, tens, units
+        {
+            int number = mineCount - flaggedCount;
+            var (hundredsCounter, tensCounter, unitsCounter) = numberToSevenSegmentDisplay(number);
+            TableLayoutPanel minesRemainingCounterBox = (TableLayoutPanel)upperBarPanel.GetControlFromPosition(0, 0);
+
+            // Replace the images in the existing PictureBoxes
+            if (minesRemainingCounterBox.Controls.Count >= 3)
+            {
+                PictureBox existingHundreds = minesRemainingCounterBox.GetControlFromPosition(0,0) as PictureBox;
+                PictureBox existingTens = minesRemainingCounterBox.GetControlFromPosition(1, 0) as PictureBox;
+                PictureBox existingUnits = minesRemainingCounterBox.GetControlFromPosition(2, 0) as PictureBox;
+
+                if (existingHundreds != null) existingHundreds.Image = hundredsCounter;
+                if (existingTens != null) existingTens.Image = tensCounter;
+                if (existingUnits != null) existingUnits.Image = unitsCounter;
+            }
+        }
+
         private void uncoverSurroundingTiles(int i, int j)
         {
             for (int x = -1; x <= 1; x++)
@@ -516,7 +626,7 @@ namespace Minesweeper_AI
         }
 
         private void scarePepe(object sender, EventArgs e) { 
-                Button restartButton = upperBarPanel.GetControlFromPosition(1, 0) as Button;
+            Button restartButton = upperBarPanel.GetControlFromPosition(1, 0) as Button;
             restartButton.Image = monkaOmegaBitmap;
         }
 
@@ -597,12 +707,16 @@ namespace Minesweeper_AI
                 // If already flagged, unflag and make clickable
                 clickedTile.Image = coveredTileBitmap;
                 clickedTile.MouseClick += Tile_Click;
+                flaggedCount--;
+                updateRemainingMines();
             }
             else if(clickedTile.Image == coveredTileBitmap)
             {
                 // If not flagged, flag it and remove click event handler
                 clickedTile.Image = flagTileBitmap;
                 clickedTile.MouseClick -= Tile_Click;
+                flaggedCount++;
+                updateRemainingMines();
             }
             else
             {
