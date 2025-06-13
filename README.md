@@ -1,4 +1,4 @@
-**Project Progress: ~80% Complete**
+**Project Progress: ~85% Complete**
 
 **Project Overview Video Progress: ~5% Complete**
 
@@ -19,7 +19,7 @@ All custom assets created for this project — namely the **"dark-mode" Mineswee
 \<Youtube video still in production!\>
 
 # 📽️ Project Overview Preview
-[![Watch the video](https://img.youtube.com/vi/pSmrhPFUxZM/0.jpg)](https://www.youtube.com/watch?v=pSmrhPFUxZM)
+[![Watch the video](https://img.youtube.com/vi/njauXJpiuJ4/0.jpg)](https://www.youtube.com/watch?v=njauXJpiuJ4)
 
 # 📈 Future Plans (Not in Order of Importance)
 [0] -> Make camelCase and snake_case consistent throughout program
