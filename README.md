@@ -13,7 +13,7 @@ A passion project featuring a custom-built Minesweeper clone in **C# (WinForms)*
 - **sweeperLib.py** – Module encapsulating screenshotting, mapping screenshots to minefield data structures, uncovering & flagging tiles 🧰
 
 
-All custom assets created for this project — namely the **"dark-mode" Minesweeper tiles,** which were drawn using Aseprite — are released under the **MIT License** and are free for anyone to use, modify, or redistribute. All other assets used in the project were sourced from the public domain.
+All custom assets created for this project — namely the **"dark-mode" Minesweeper tiles** and **7-segment display images** which were drawn using Aseprite — are released under the **MIT License** and are free for anyone to use, modify, or redistribute. All other assets used in the project were sourced from the public domain.
 
 # 📽️ Project Overview
 \<Youtube video still in production!\>
