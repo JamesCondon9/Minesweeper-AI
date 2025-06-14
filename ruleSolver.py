@@ -3,6 +3,18 @@ from sweeperLib import MineNotWithinGridException
 import time
 from itertools import groupby, product
 
+# Defines whether or not a pass of all mines resulted in no actions being taken, used to decide
+# whether it is necessary to use reduction / mine counting patterns
+no_click_pass = True
+"""
+Note - Using a global here is bad practice,
+refactor in future if possible (more motivated
+to spend my time making the core functionality
+at this particular moment in time 😁)
+
+^^^ NOT CURRENTLY WORKING, CONTINUE WORKING FROM HERE NEXT PROGRAMMING SESSION ^^^
+"""
+
 def step_solver(minefield):
     # Attempt to take a step??? Hope for the best maybe just click a random tile or something
     for y, row  in enumerate(minefield):
@@ -13,8 +25,13 @@ def step_solver(minefield):
                 #print(f"\nStepping from row {y} column {x} tile...")
                 solve_from_tile(minefield, x, y)
 
+    global no_click_pass
+    no_click_pass = True
+
 def solve_from_tile(minefield, x, y):
     
+    global no_click_pass
+
     # TEMPORARY TEST BLOCK ~~~~~~
     """ if(y!= 6 or x != 4):
         return """
@@ -24,7 +41,6 @@ def solve_from_tile(minefield, x, y):
         tile_value = int(minefield[y][x])
     except:
         raise Exception("Error - basic_checks function should only be called on tiles that have number values")
-    
     
     try:
         flagged_count, covered_count, surrounding_tiles = find_surrounding_tiles(minefield, y, x)
@@ -46,9 +62,8 @@ def solve_from_tile(minefield, x, y):
     if(tile_value-flagged_count == covered_count):
         print("BASIC CHECK [B1] ACTIVATED!")
         for (row, col), value in surrounding_tiles.items(): # Flag all covered tiles as they are all mines
-           # print(f"Surrouning Tile: {(row, col)} Value: {value}")
             if(value == "covered"):
-                #print(f"Flagging {(row, col)}")
+                no_click_pass = False
                 sweeperLib.flag_tile((col, row))
                 minefield[row][col] = "flagged"
         return
@@ -58,7 +73,7 @@ def solve_from_tile(minefield, x, y):
         print("BASIC CHECK [B2] ACTIVATED!")
         for (row, col), value in surrounding_tiles.items(): # Click all covered tiles as there are no remaining mines
             if(value == "covered"):
-                #print(f"Uncovering {(row, col)}")
+                no_click_pass = False
                 sweeperLib.uncover_tile((col, row))
         return
 
@@ -66,7 +81,6 @@ def solve_from_tile(minefield, x, y):
     else: # Prepare more data for next round of basic checks on the tile
         surrounding_adjacent_covered_tiles = find_adjacent_covered_tiles(surrounding_tiles)
         surrounding_number_tiles = find_surrounding_number_tiles(surrounding_tiles)
-
 
     # Basic Patterns [1-1], [1-1+], [1-2] and [1-2+]
 
@@ -97,6 +111,7 @@ def solve_from_tile(minefield, x, y):
                         # Check it wasn't one of the originals and is a covered tile
                         if(not new_surrounding_tile in surrounding_tiles and minefield[new_surrounding_tile[0]][new_surrounding_tile[1]] == "covered"):
                             try:
+                                no_click_pass = False
                                 sweeperLib.uncover_tile((new_surrounding_tile[1], new_surrounding_tile[0]))
                             except MineNotWithinGridException as e:
                                 print(f"Invalid mine coordinate: {e}")
@@ -114,12 +129,12 @@ def solve_from_tile(minefield, x, y):
                             # Check it wasn't one of the originals and is a covered tile
                             if(not new_surrounding_tile in surrounding_tiles and minefield[new_surrounding_tile[0]][new_surrounding_tile[1]] == "covered"):
                                 try:
+                                    no_click_pass = False
                                     minefield[new_surrounding_tile[0]][new_surrounding_tile[1]] = "flagged"
                                     sweeperLib.flag_tile((new_surrounding_tile[1], new_surrounding_tile[0]))
                                 except MineNotWithinGridException as e:
                                     print(f"Invalid mine coordinate: {e}")
                     return
-
 
     # Basic Patterns [1-2-1] and [1-2-2-1]
     # Hole Patterns [H1]
@@ -143,9 +158,13 @@ def solve_from_tile(minefield, x, y):
                 if(coords_are_only_surroundings(minefield, [common_tile_one, common_tile_two], y, x)):
                     _, _, new_surrounding_tiles = find_surrounding_tiles(minefield, y+delta_y, x+delta_x)
                     for coord, value in new_surrounding_tiles.items():
-                        print("HOLE CHECK [H1] ACTIVATED!")
+                        print(f"HOLE CHECK [H1] ACTIVATED AT {y,x}!")
                         if(value == "covered" and coord != common_tile_one and coord != common_tile_two and is_in_bounds(coord[0], coord[1])):
+                            no_click_pass = False
                             sweeperLib.uncover_tile(coord)
+                
+                
+                
                 return
 
             elif(value == "2"): # Keep checking for Basic Patterns [1-2-1] and [1-2-2-1]
@@ -188,13 +207,16 @@ def solve_from_tile(minefield, x, y):
                         continue
 
                     if(minefield[y+offset_y][x+offset_x] == "covered"):
+                        no_click_pass = False
                         sweeperLib.flag_tile((x+offset_x, y+offset_y))
                         minefield[y+offset_y][x+offset_x] = "flagged"
 
                     if(minefield[y+delta_y+offset_y][x+delta_x+offset_x] == "covered"):
+                        no_click_pass = False
                         sweeperLib.uncover_tile((x+delta_x+offset_x, y+delta_y+offset_y))
 
                     if(minefield[y+2*delta_y+offset_y][x+2*delta_x+offset_x] == "covered"):
+                        no_click_pass = False
                         sweeperLib.flag_tile((x+2*delta_x+offset_x, y+2*delta_y+offset_y))
                         minefield[y+2*delta_y+offset_y][x+2*delta_x+offset_x] = "flagged"
 
@@ -242,25 +264,63 @@ def solve_from_tile(minefield, x, y):
                             continue
 
                         if(minefield[y+offset_y][x+offset_x] == "covered"):
+                            no_click_pass = False
                             sweeperLib.uncover_tile((x+offset_x, y+offset_y))
 
                         if(minefield[y+delta_y+offset_y][x+delta_x+offset_x] == "covered"):
+                            no_click_pass = False
                             sweeperLib.flag_tile((x+delta_x+offset_x, y+delta_y+offset_y))
                             minefield[y+delta_y+offset_y][x+delta_x+offset_x] = "flagged"
 
                         if(minefield[y+2*delta_y+offset_y][x+2*delta_x+offset_x] == "covered"):
+                            no_click_pass = False
                             sweeperLib.flag_tile((x+2*delta_x+offset_x, y+2*delta_y+offset_y))
                             minefield[y+2*delta_y+offset_y][x+2*delta_x+offset_x] = "flagged"
 
                         if(minefield[y+3*delta_y+offset_y][x+3*delta_x+offset_x] == "covered"):
+                            no_click_pass = False
                             sweeperLib.uncover_tile((x+3*delta_x+offset_x, y+3*delta_y+offset_y))
 
                         return
 
+
+    # Generate frontier
+    """
+    Note - We generate the frontier if a pass has happened with
+    no clicks to improve efficiency. With reduction / mine counting,
+    it's particularly impactful to only consider frontier tiles as
+    it avoids generating pairs of tiles that will lead to nothing.
+    """
+    if(no_click_pass): # Only move onto reduction and mine counting when the solver gets stuck using previous patterns
+        frontier = find_frontier(minefield)
+        print(frontier)
+    else:
+        return # If we didn't just have a pass where nothing happened, keep going with the previous checks.
+
+    """ ^^^ NOT CURRENTLY WORKING, CONTINUE WORKING FROM HERE NEXT PROGRAMMING SESSION ^^^ """
+
+    # Reduction
+    
+
     # Mine Counting
     
 
-                
+def find_frontier(minefield):
+    frontier = {}
+
+    for frontier_y, frontier_row  in enumerate(minefield):
+        for frontier_x, frontier_tile in enumerate(frontier_row):
+            if(frontier_tile == "covered" or frontier_tile == "empty" or frontier_tile == "flagged"):
+                continue # Skip non-number tiles.
+            else:
+                # Only add number tiles that have at least one surrounding covered tile
+                _, _, frontier_surrounding_tiles = find_surrounding_tiles(minefield, frontier_y, frontier_x)
+                surrounding_covered_tiles = find_surrounding_covered_tiles(frontier_surrounding_tiles)
+                if(surrounding_covered_tiles):
+                    frontier.update(surrounding_covered_tiles)
+
+    return frontier
+
 def find_surrounding_tiles(minefield, y, x):
     flagged_count = 0
     covered_count = 0
@@ -317,6 +377,18 @@ def find_adjacent_covered_tiles(tile_dict):
 
 
     return res
+    
+def find_surrounding_covered_tiles(tile_dict):
+    if not(isinstance(tile_dict, dict)):
+        return None
+
+    coords_dict = {}
+
+    for coord, value in tile_dict.items():
+        if(value == "covered"):
+            coords_dict.update({coord:value})
+
+    return coords_dict
     
 def find_surrounding_number_tiles(tile_dict):
     if not(isinstance(tile_dict, dict)):

@@ -504,6 +504,7 @@ namespace Minesweeper_AI
                 control.Dispose(); // Optional: free resources if not reused
             }
 
+            flaggedCount = 0; // Reset flagged count
             hasWon = false;
 
             startGame(sender, e); // Restart the game by calling startGame again
