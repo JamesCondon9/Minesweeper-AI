@@ -2,7 +2,7 @@
 
 **Project Overview Video Progress: ~5% Complete**
 
-(Total Screen Recording Footage So Far: **05:28:55** over _94 videos!_ Video length goal is **7 minutes!**) 
+(Total Screen Recording Footage So Far: **05:30:58** over _97 videos!_ Video length goal is **7 minutes!**) 
 
 # 💣 Minesweeper-AI
 A passion project featuring a custom-built Minesweeper clone in **C# (WinForms)** and a **Python-based** rule-driven solver. The solver uses traditional AI techniques based on classic Minesweeper patterns ([minesweeper.online/help/patterns](minesweeper.online/help/patterns)) and interacts with the game through screen recognition and automation via `pyautogui` and `OpenCV`.
